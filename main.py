@@ -3,7 +3,6 @@ import gspread
 import sqlite3
 from datetime import timedelta, datetime
 from datetime import date as d
-from threading import Timer
 
 import re 
 
@@ -146,10 +145,11 @@ def get_week(list):
 upper_week_days = ['01.09', '02.09', '03.09', '04.09', '05.09', '06.09', '15.09', '16.09', '17.09', '18.09', '19.09', '20.09', '29.09', '30.09', \
                    '01.10', '02.10', '03.10', '04.10', '13.10', '14.10', '15.10', '16.10', '17.10', '18.10', '03.11', '04.11', '05.11', '06.11', \
                     '07.11', '08.11', '21.11', '22.11', '17.11', '18.11', '19.11', '20.11', '01.12', '02.12', '03.12', '04.12', '05.12', '06.12', \
-                     '15.12', '16.12', '17.12', '18.12', '19.12']
+                     '15.12', '16.12', '17.12', '18.12', '19.12', '19.10', '09.11', '23.11', '07.12', '21.12']
 lower_week_days = ['08.09', '09.09', '10.09', '11.09', '12.09', '13.09', '22.09', '23.09', '24.09', '25.09', '26.09', '27.09', '06.10', '07.10', \
                    '08.10', '09.10', '10.10', '11.10', '20.10', '21.10', '22.10', '23.10', '24.10', '01.11', '10.11', '11.11', '12.11', '13.11', \
-                    '14.11', '15.11', '24.11', '25.11', '26.11', '27.11', '28.11', '29.11', '08.12', '09.12', '10.12', '11.12', '12.12', '13.12']
+                    '14.11', '15.11', '24.11', '25.11', '26.11', '27.11', '28.11', '29.11', '08.12', '09.12', '10.12', '11.12', '12.12', '13.12', \
+                '02.11', '16.11', '30.11', '14.12' ,'26.10']
 weekend_days = ['07.09', '14.09', '21.09', '28.09', '05.10', '12.10', '19.10', '03.11', '02.11', '09.11', '16.11', '23.11', '30.11', '07.12', '14.12', '31.12']
 session_days = ['25.10', '26.10', '27.10', '28.10', '29.10', '30.10', '31.10', '20.12', '21.12', '22.12', '23.12', '24.12', '25.12', '26.12', '27.12', '28.12', '29.12', '30.12']
 
@@ -205,9 +205,10 @@ import asyncio
 
 from aiogram import F, Bot, Dispatcher
 from aiogram.filters import CommandStart, Command
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.types import Message, CallbackQuery
 
 from config import TOKEN
+from keyboards import kb_disciplines, kb_start, kb_english, keybord_inline, keybord_reply
 
 bot = Bot(TOKEN)
 dp = Dispatcher()
@@ -249,37 +250,6 @@ async def schedule(message: Message):
 async def help(message: Message):
     await message.answer("Если у Вас возникли вопросы, обращайтесь @lebsergei \nПо вопросам сотрудничества - @longerxo")
 
-kb_start = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text= 'Информация о боте', url='https://longerx00.github.io/site/')]])
-
-kb_disciplines = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Программирование C/C++', callback_data='c++')],
-    [InlineKeyboardButton(text='Технологии программирования', callback_data='tp')],
-    [InlineKeyboardButton(text='Дискретная математика', callback_data='discra')],
-    [InlineKeyboardButton(text='Основы российской государственности', callback_data='org')],
-    [InlineKeyboardButton(text='Математический анализ', callback_data='mathan')],
-    [InlineKeyboardButton(text='Безопасность жинедеятельности', callback_data='bzhd')],
-    [InlineKeyboardButton(text='НПС "Цифровая грамотность"', callback_data='cg')],
-    [InlineKeyboardButton(text='Алгоритмы и структуры данных', callback_data='c++')]
-])
-
-keybord_reply = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='Сегодня'), KeyboardButton(text='Завтра')],
-    [KeyboardButton(text='Послезавтра'), KeyboardButton(text='Текущая неделя')],
-    [KeyboardButton(text='⏪ Пред. неделя'), KeyboardButton(text='След. неделя ⏩')]
-], resize_keyboard=True, input_field_placeholder='Выберите день:')
-# ⏹️⏩⏪
-keybord_inline = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='КНТ-1', callback_data='knt-1'), InlineKeyboardButton(text='КНТ-2', callback_data='knt-2')],
-    [InlineKeyboardButton(text='КНТ-3', callback_data='knt-3'), InlineKeyboardButton(text='КНТ-4', callback_data='knt-4')],
-    [InlineKeyboardButton(text='КНТ-5', callback_data='knt-5'), InlineKeyboardButton(text='КНТ-6', callback_data='knt-6')],
-    [InlineKeyboardButton(text='КНТ-7', callback_data='knt-7')]
-])
-
-kb_english = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Расписание', url='https://docs.google.com/spreadsheets/d/1RB9AWtrYm6Y9m8NSy6On7Zk3byws8RonAGBqeneSxOo/edit?gid=23993546#gid=23993546')]
-])
-
-
 @dp.callback_query(F.data == 'knt-1')
 async def knt__1(callback: CallbackQuery):
     global temple_value
@@ -287,8 +257,6 @@ async def knt__1(callback: CallbackQuery):
     temple_value = knt_1
     await callback.answer('выбрана группа КНТ-1')
     await callback.message.answer('Выбери нужные дни ниже:', reply_markup=keybord_reply)
-
-
 
 @dp.callback_query(F.data == 'knt-2')
 async def knt__2(callback: CallbackQuery):
